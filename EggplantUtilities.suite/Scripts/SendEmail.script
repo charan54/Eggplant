@@ -1,0 +1,14 @@
+﻿
+
+
+//Send Email
+sendmail{to: "charan1@gmail.com,Charan2@gmail.com", subject: "Eggplant Status Update", body: <<
+Hello,
+
+Please find the excel attached for status report.
+
+Thanks,
+Charan
+>>,attachment:ResourcePath("Data.xlsx")}
+
+//In Order to send the mail first go to Eggplant Preferences >> Account >>Give in the SMPT server Details, Transport -> Unencripted, Authentication -> none, Give in username and password of your email.

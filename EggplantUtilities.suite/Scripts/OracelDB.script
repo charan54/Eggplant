@@ -1,0 +1,3 @@
+﻿set myDB to {type:"odbc", DSN:"value", user:"value", password:"value"}
+put executeSQL(myDB,"select id, name from person p, encounter e where id = 001'") into OutputVal
+log OutputVal

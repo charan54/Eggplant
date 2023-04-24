@@ -1,0 +1,17 @@
+﻿set myExcelDB to {type:"excel", file:ResourcePath("Data.xlsx"), writable: Yes,name:"Sheet1"}
+put the records of myExcelDB into excelContent 
+//put excelContent joined by return 
+
+repeat with each item of excelContent
+	log item repeatIndex() of excelContent
+end repeat
+
+repeat 5 times
+	try
+		put item repeatindex() of excelContent into newContent
+		put item repeatIndex() of excelContent into rowVal
+		log rowVal
+	catch anException
+		Next repeat
+	end try
+end repeat

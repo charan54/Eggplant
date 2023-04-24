@@ -1,0 +1,148 @@
+﻿
+to ReturnTableHeader  fullStringVal
+	//Normalize header values
+	put the number of lines of fullStringVal into count
+	put 1 into linecount
+	repeat count times
+		if line linecount of fullStringVal is empty
+			delete  line linecount of fullStringVal
+		else
+			put linecount+1 into linecount
+		end if
+	end repeat
+	delete  line 1 of fullStringVal
+	//make key pair of date and time
+	delete "," from fullStringVal
+	put the year into thisYear
+	put the year - 1 into lastYear
+	put 0 into count
+	repeat with each line of fullStringVal 
+		if it contains thisYear or it contains lastYear or it contains "Today"
+			insert it into parentListDate
+			put count +1 into count
+		else
+			insert  it nested into item count of parentListDate  
+		end if
+	end repeat
+	return parentListDate
+end ReturnTableHeader
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+to ReturnTableRow fullStringVal
+	
+	//delete empty lines
+	put the number of lines of fullStringVal into count
+	put 1 into linecount
+	repeat count times
+		if line linecount of fullStringVal is empty
+			delete  line linecount of fullStringVal
+		else
+			put linecount+1 into linecount
+		end if
+	end repeat
+	//form a list of  values
+	repeat with each line of fullStringVal
+		if it is "/"
+			insert (line repeatIndex() - 1 of fullStringVal)&it&(line repeatIndex() +1 of fullStringVal) into bpList
+		else if it is "--" and line repeatIndex() +1 of fullStringVal is not "/"
+			insert it into bpList
+		end if
+	end repeat
+	return bpList
+end ReturnTableRow
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+to ReturnListOfList parentList, childList
+	put 1 into mainCount
+	repeat with each item of parentList
+		put it into subList
+		put number of items of subList into subcount
+		if subcount > 2
+			put 2 into subSubCount
+			repeat subcount - 1 times
+				insert item 1 of childList nested into item subSubCount  of item mainCount of parentList
+				delete item 1 of childList
+				put subSubCount + 1 into subSubCount
+			end repeat
+			else
+			insert item 1 of childList nested into item 2  of item mainCount of parentList
+			delete item 1 of childList
+		end if
+		put mainCount +1 into mainCount
+	end repeat
+	return parentList
+end ReturnListOfList
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+to ArrangetDataToList fileContent
+	//identifying the column names and inserting them into a list
+	put line 1 of fileContent into columnNamesLine
+	delete line 1 of fileContent
+	repeat with each item delimited by "," of columnNamesLine
+		insert trim(it) into columnNames
+	end repeat
+	
+	//delete empty lines
+	put 1 into linecount
+	put the number of lines of fileContent into count
+	repeat count times
+		if line linecount of fileContent is empty
+			delete  line linecount of fileContent
+		else
+			put linecount+1 into linecount
+		end if
+	end repeat
+	//identifying the column values and inserting it into a list of list
+	repeat with each line of fileContent
+		split it using ","
+		put it into rowValue
+		put the number of items of columnNames into columnCount
+		repeat columnCount times
+			//insert  item repeatIndex() of rowValue nested into item repeatIndex()  of columnNames
+			insert  trim(item repeatIndex() of rowValue) nested into item repeatIndex()  of columnNames
+		end repeat
+	end repeat
+	put columnNames into dataList
+	return dataList
+end ArrangetDataToList
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+to returnSpecifiedColumn listVal,columnName
+	repeat with each item of listVal
+		if item 1 of it is columnName
+			put 1 into flag
+			return it
+		else
+			put 0 into flag
+		end if
+end repeat
+
+if flag is 0
+	log "Specified column name not found"
+end if
+end returnSpecifiedColumn
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+to CheckLineSortedAscending strList
+	put number of lines of strList into count
+	log count
+	Repeat  count-1 times
+if line repeatIndex() of strList is less than or equal to line repeatIndex()+1 of strList
+			LogSuccess "Column Sorted"
+		else
+			LogError "Column Not sorted"
+		end if
+	End Repeat
+end checkLineSortedAscendings
+
+

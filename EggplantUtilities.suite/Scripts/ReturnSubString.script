@@ -1,0 +1,46 @@
+﻿//---------------------------------------------------------------------------------------------------------------------------------------------
+(* 
+Description: The handler  returns the substring of a given string.
+Input Variable     - fullStringVal - Enter the full string for which you need a substring.
+                        -   startVal - Enter the starting value of a substring             
+                        -   startOccurence - Enter the occurence count of the starting value from which the substring should start, eg: if der are 2  values present of the same starting value in the full string, specify from whcih occuence the starting should be, so enter either 1 , 2 or 3 so on...              
+                        -   endVal - Enter the ending value of a substring, if no ending value just enter the double quotes ""
+                        -   endOccurence - Enter the occurence count of the end value from which the substring should end, eg: if der are 2 end  values present in the full string, specify from whcih occuence the ending should be, so enter either 1 , 2 or 3 so on...   you can just mention 1 if the if end value is blank ""            
+       
+Expected               - The utility will return the substring
+*)
+
+to ReturnSubString  fullStringVal, startVal, startOccurence, endVal, endOccurence
+	put 1 into startCount
+	repeat with each line of fullStringVal
+		if it  contains startVal
+			if startOccurence is startCount
+				put repeatIndex() into startLineNum
+				Exit repeat
+			else
+				put startCount + 1 into startCount
+			end if
+		end if
+	end repeat
+	
+	if endVal is ""
+		delete line 1 to startLineNum  of fullStringVal
+		return fullStringVal
+	else
+		put 1 into endCount
+		repeat with each line of fullStringVal
+			if it  contains endVal
+				if endOccurence is endCount
+					put repeatIndex() into endLineNum
+					Exit repeat
+				else
+					
+					put endCount + 1 into endCount
+				end if
+			end if
+		end repeat
+		delete lines endLineNum to last  of fullStringVal
+		delete lines 1 to startLineNum  of fullStringVal
+	end if
+	return fullStringVal
+end ReturnSubString

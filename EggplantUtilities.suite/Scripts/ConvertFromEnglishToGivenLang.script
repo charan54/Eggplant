@@ -1,0 +1,94 @@
+﻿
+put "Glossary.xlsx" into glossaryPath
+put "ToConvertString\EnglishString.txt" into englishStringPath
+put  "ConvertedOutput.json" into OutFilePath
+put "enu" into fromLangAbbr
+put "nlb" into toLangAbbr
+
+translateAndPutIntoJsonFile glossaryPath,englishStringPath,OutFilePath,fromLangAbbr,toLangAbbr
+
+
+
+to translateAndPutIntoJsonFile glossaryPath,englishStringPath,OutFilePath,fromLangAbbr,toLangAbbr
+
+	set myExcelDB to {type:"excel", file:glossaryPath, writable: No}
+	put the records of myExcelDB into langString 
+	
+	Set toTranslateValue to file ResourcePath(englishStringPath)
+	put trim(toTranslateValue) into toTranslateValue
+	
+	//Start of get the value into listForm
+	repeat with each line of toTranslateValue
+		put repeatindex()+1 into lineNumber
+		put it into keyName
+		put "" into duplicate
+		repeat with each item of langString
+			put  it into newItem
+			//if the english key matches
+			if newItem.(fromLangAbbr) is keyName
+				if duplicate is empty
+					insert keyName into duplicate
+				end if
+				insert newItem.(toLangAbbr) nested into item 2 of duplicate
+			end if
+		end repeat
+		
+		
+		//to check for dupliacte value
+		put 0 into dupCount
+		put the number of items of item 2 of duplicate into dupCount
+		if dupCount  >1
+			put item 2 of duplicate into dupVal
+			put item 1 of dupVal into compareVal
+			//if values of the key is not duplicate logerror
+			repeat with each item of dupVal
+				if it is not compareVal
+					LogError "The"&&<<">>&keyName&<<">> &&"has more then one value in glossary, the values are :"&& dupVal
+					LogWarning "Currently"&&<<">>& compareVal&<<">>&& "is assigned to"&& <<">>&keyName&<<">>&&"at json- line number:"&&lineNumber
+				end if
+			end repeat
+			
+			
+			//to delete other values and keep only 1
+			repeat dupCount -1 times
+				delete last item of item 2 of duplicate
+			end repeat
+			
+			insert duplicate nested into jsonVal
+			
+		else if dupCount is 0
+			LogError "No translation found in glossary for the string "<<">>&keyName&<<".>>&&"You can find in json at line"&&lineNumber
+			insert keyName nested into jsonVal
+		else
+			insert duplicate nested into jsonVal
+		end if
+		
+	end repeat
+	log jsonVal
+	//End of get the value into listForm
+	
+	//Start of convert to json format
+	put "" into jsonContent
+	repeat with each item of jsonVal
+		put it into keyVal
+		//put the number of items of keyVal into valExistCount
+		put jsonContent&<<">>& item 1 of keyVal&<<":">>&item 1 of item 2 of keyVal&<<",>>&&newline into jsonContent
+	end repeat
+	put trim(jsonContent) into jsonContent
+	delete  last "," from jsonContent
+	put <<{>>&newline&jsonContent&newline&<<}>> into jsonContent
+	log jsonContent
+	//End of convert to json format
+	
+	
+	
+	//Start of Write into Json file
+	
+	if file OutFilePath exists then delete file OutFilePath
+	open file  OutFilePath
+	put openFiles() into myFileName
+	write jsonContent to file myFileName
+	close file myFileName
+	//End of Write into Json file
+	
+end translateAndPutIntoJsonFile

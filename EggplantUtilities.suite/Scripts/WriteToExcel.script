@@ -1,0 +1,6 @@
+﻿set MyExcelFile to Workbook(ResourcePath("Data.xlsx"))
+set worksheet1 to MyExcelFile.Worksheet("Sheet1")
+//put Cell(worksheet1, "A2") into cellValue1
+put  "Done" into worksheet1's Cell("F2")
+put 3 into statusCellNumber
+put  "Not Processed" into worksheet1's Cell("F"&statusCellNumber)

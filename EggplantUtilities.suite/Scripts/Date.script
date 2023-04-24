@@ -1,0 +1,59 @@
+﻿
+
+put formattedTime("[month]/[day]/[year]" , ("11/26/91")) into FileName
+log FileName
+---------------------------------------------------------------------------------------------------------
+put formattedTime("[month]-[day]-[year]" , ("11/26/91")) into FileName
+log FileName
+---------------------------------------------------------------------------------------------------------
+put formattedTime("[month]-[day]-[year]" , ("11/26/91")) into FileName
+log FileName
+-------------------------------------------------------------------------------------------------------
+put formattedTime("[month name] [day], [year]" , ("11/26/91")) into FileName
+log FileName
+-------------------------------------------------------------------------------------------------------
+put formattedTime("[month name] [day], [year] [hr]:[mi]:[se]" , ("11/26/91")) into FileName
+log FileName
+-------------------------------------------------------------------------------------------------------
+put formattedTime("[hour24]:[minute]:[second]" , ("4:45:22 PM")) into FileName
+log FileName
+-------------------------------------------------------------------------------------------------------------
+put formattedTime("[hr]:[mi]",("0534")) into x
+log x
+put "11/24/2020 " into dddd
+set  dddd = dddd + 1 days 
+log dddd
+-------------------------------------------------------------------------------------------------------------
+//To get Date and Time from CMD
+//Date
+TypeText "date | clip" 
+TypeText returnKey
+wait 2
+TypeText returnKey
+TypeText returnKey
+put RemoteClipboard()  into stringDate
+delete line 2 of  stringDate
+put (the offset of "is:" in stringDate)+2 into temp
+delete characters 1 to temp of stringDate
+put trimStart(stringDate) into stringDate
+put trimEnd(stringDate) into stringDate
+log stringDate
+
+-------------------------------------------------------------------------------------------------------------
+
+
+//Time
+TypeText "time | clip" 
+TypeText returnKey
+wait 2
+TypeText returnKey
+TypeText returnKey
+put RemoteClipboard()  into stringTime
+delete line 2 of  stringTime
+put (the offset of "is:" in stringTime)+2 into temp
+delete characters 1 to temp of stringTime
+put (the offset of "." in stringTime) into temp
+delete characters temp to last of stringTime
+put trimStart(stringTime) into stringTime
+put trimEnd(stringTime) into stringTime
+log stringTime

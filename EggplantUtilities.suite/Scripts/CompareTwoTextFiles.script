@@ -1,0 +1,73 @@
+﻿//Compare two text files and output the result in 3rd
+
+
+//Create and open a text file
+create file "c:\result.txt"
+wait 1
+open file  "c:\result.txt"
+put openFiles() into myFileName
+
+//Two files to compare
+set expectedResult to file ResourcePath("File1.txt")
+set actualResult to file ResourcePath("File2.txt")
+
+//Delete all the Unwanted Symbols
+put actualResult into logContent
+delete all "," from logContent
+delete all <<">> from logContent
+delete all "[" from logContent
+delete all "]" from logContent
+delete all "}" from logContent
+delete all "{" from logContent
+
+//Compare the two files and output the results
+put 1 into lineNumber
+repeat with each line of expectedResult
+	if it is line lineNumber of actualResult
+		put it into temp
+		//check for white spaces and delete them
+		delete all <whitespace> from temp
+		if temp is "{" or temp is "}"
+			//do nothing
+		else
+			put  line  lineNumber of logContent into a
+			LogSuccess a
+			write "Success       :           "&&a&&newline to file myFileName
+		end if
+	else
+		put  line  lineNumber of logContent into a
+		
+		
+		if it contains "eventTimeStamp"
+			put line  lineNumber of logContent into temp
+			put  offset of ":" in temp into postionNumber
+			delete characters 1 to postionNumber of temp
+			put trim( temp) into temp
+			
+			put length of temp into charCount
+			if  charCount is 28
+				put  line  lineNumber of logContent into a
+				LogSuccess a
+				LogSuccess "Character length of eventTimeStamp is 9"
+				write "Success       :           "&&a&&newline to file myFileName
+			else
+				LogError "Character length of eventTimeStamp is not 9"
+				write  "Error *****   :           "&&a&&newline to file myFileName
+			end if
+		else
+			LogError a
+			write  "Error *****   :           "&&a&&newline to file myFileName
+			
+		end if
+	end if
+	put lineNumber + 1 into lineNumber
+end repeat
+
+//close the file
+close file myFileName
+
+
+
+
+
+
